@@ -274,7 +274,7 @@
       },
       save (date) {
           this.$refs.menu.save(date)
-        },
+      },
       saveOrUpdate(){
         this.loading = true;
         if(this.edit) {

@@ -32,6 +32,7 @@ import PreviousProject from "@/views/PreviousProject.vue";
 import ManageTherapy from "@/views/MangeTherapy.vue";
 import TherapyProfile from "@/views/TherapyProfile.vue";
 import TherapyHoldUser from "@/views/TherapyHoldUser.vue";
+import TherapyMeeting from "@/views/TherapyMeeting.vue";
 
 Vue.use(VueRouter)
 
@@ -75,7 +76,11 @@ const routes = [
       // Check if the user is allowed to access this route
           therapyGuard(next)
         }
-      },
+    },{ path: '/therapy-meetings', name: 'Therapy Meetings Manage', component: TherapyMeeting,beforeEnter: (to, from, next) => {
+      // Check if the user is allowed to access this route
+          therapyGuard(next)
+        }
+    },
 ]
 
 function therapyGuard(next){

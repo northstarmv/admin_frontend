@@ -70,7 +70,7 @@
               cols="12"
             >
             <span class="err-msg" v-if="v$.working_type.$error">{{ v$.working_type.$errors[0].$message }}</span>
-            <v-select :selected="state.working_type" outlined class="mr-0 mr-sm-1" label="Working Type" v-model="state.working_type"  item-value="value" :items="UserTypes"></v-select>
+            <v-select :selected="state.working_type" disabled outlined class="mr-0 mr-sm-1" label="Working Type" v-model="state.working_type"  item-value="value" :items="UserTypes"></v-select>
           </v-col> 
         </v-row>
         <template v-if="state.working_type==2">
@@ -327,17 +327,34 @@
 
         <v-row no-gutters>
           <v-col
-              sm="12"
+              sm="6"
+              col="12"
             >
             <span class="err-msg" v-if="v$.country.$error">{{ v$.country.$errors[0].$message }}</span>
             <v-select class="ml-0 ml-sm-1 mr-0 mr-sm-2 rounded-lg" item-text="name"
               item-value="code"  :items="$store.state.countries"  v-model="state.country" outlined label="Country" ></v-select>
           </v-col> 
+          <v-col
+              sm="6"
+              col="12"
+            >
+            <span class="err-msg" v-if="v$.city.$error">{{ v$.city.$errors[0].$message }}</span>
+            <v-text-field  outlined  label="City" class="mr-2" v-model="state.city"></v-text-field>
+          </v-col>
         </v-row>
 
-      <v-row justify="end" no-gutters>
-        <v-btn type="submit" :loading="loading"  width="128" elevation="0"  height="56" color="primary">Save</v-btn>
-      </v-row>
+        <v-row no-gutters>
+
+          <v-col
+              cols="12"
+            >
+            <span class="err-msg" v-if="v$.address.$error">{{ v$.address.$errors[0].$message }}</span>
+            <v-text-field  outlined  label="Address" class="ml-0 ml-sm-1 mr-0 mr-sm-2 rounded-lg" v-model="state.address"></v-text-field>
+          </v-col> 
+        </v-row>
+        <v-row justify="end" no-gutters>
+          <v-btn type="submit" :loading="loading"  width="128" elevation="0"  height="56" color="primary">Save</v-btn>
+        </v-row>
     </form>
     </v-card-text>
   </v-card>
@@ -356,8 +373,10 @@ export default {
   setup(){
     const state = reactive({
       name: "",
+      city:"",
       email: "",
-      working_type: "1",
+      address:"",
+      working_type: "2",
       hourly_rate: "",
       password: "",
       phone: "",
@@ -376,9 +395,11 @@ export default {
           phone: { required, maxLength:maxLength(20) },
           nic_no:{ required, maxLength:maxLength(30) },
           name: { required, maxLength:maxLength(200) },
+          address:{ required, maxLength:maxLength(500) },
           email: { email, required},
           gender: {  required},
           country: {  required},
+          city: {  required:maxLength(100)},
           working_type: { required,numeric},
           paying_type: { required,numeric},
           hourly_rate: { numeric},
@@ -414,7 +435,6 @@ export default {
     date: null,
     menu: false,
     UserTypes: [
-    { text: 'Full Time', value: '1'},
     { text: 'Specific Time', value: '2'}
   ],
   payingTypes: [
@@ -489,6 +509,8 @@ export default {
               'password' : this.state.password,
               'phone' : this.state.phone,
               'nic' : this.state.nic_no,
+              'address' : this.state.address,
+              'city' : this.state.city,
               'country' : this.state.country,
               'gender' : this.state.gender,
               'birthday' : this.date,
@@ -554,6 +576,8 @@ export default {
               'phone' : this.state.phone,
               'nic' : this.state.nic_no,
               'country' : this.state.country,
+              'address' : this.state.address,
+              'city' : this.state.city,
               'gender' : this.state.gender,
               'birthday' : this.date,
               'working_time' : this.state.working_type == 2 ? final_time_list : undefined,
@@ -608,11 +632,13 @@ export default {
       this.state.country = this.therapy.country_code;
       this.date = this.therapy.birthday;
       this.state.email = this.therapy.email;
+      this.state.city = this.therapy.city,
       this.state.working_type = `${this.therapy.working_type}`;
       this.state.paying_type = `${this.therapy.paying_type}`;
       this.state.hourly_rate = this.therapy.paying_type == 1? this.therapy.hourly_rate : "";
       this.state.phone = this.therapy.phone;
       this.state.nic_no = this.therapy.nic_no;
+      this.state.address = this.therapy.address,
       this.state.session_rate = this.therapy.paying_type == 2? this.therapy.session_rate : "";
       this.state.session_duration = this.therapy.paying_type == 2? this.therapy.session_duration : "";
       this.qualification_arr = this.therapy.therapy__qualifications

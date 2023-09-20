@@ -39,7 +39,7 @@
         <v-img height="128" width="260" contain src="@/assets/allblack.png" max-width="200" max-height="200"></v-img>
       </div>
 
-      <v-list-item active-class="sideMenu-active" v-for="(menu,i) in sideMenuGym" :key="i" color="transparent"
+      <v-list-item active-class="sideMenu-active" v-for="(menu,i) in sideMenuTherapy" :key="i" color="transparent"
                    class="sideMenu rounded" :to="menu.to">
         <v-list-item-icon>
           <v-icon color="black">{{ menu.icon }}</v-icon>
@@ -94,6 +94,18 @@ export default {
         title: 'Finances',
         icon: 'mdi-account-group',
         to: ''
+      },
+    ],
+    sideMenuTherapy:[
+      {
+        title: 'Therapy Profile',
+        icon: 'mdi-account',
+        to: '/therapy-profile'
+      },
+      {
+        title: 'Meetings',
+        icon: 'mdi-account-group',
+        to: '/therapy-meetings'
       },
     ],
     sideMenu: [
@@ -181,6 +193,11 @@ export default {
         title: 'Previous Project Manage',
         icon: 'mdi-account-group',
         to: '/previous-projects'
+      },
+      {
+        title: 'Therapy Manage',
+        icon: 'mdi-account-group',
+        to: '/therapy-manage'
       }
 
     ]

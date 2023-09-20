@@ -50,7 +50,10 @@ export default {
           this.$store.commit("setAuth", response.data);
           if(['admin','moderator'].includes(this.$store.state.user.role)){
             this.$router.push('/members');
-          } else {
+          }else if( this.$store.state.user.role === 'therapy' ){
+            this.$router.push( '/therapy-profile');
+          }
+           else {
             this.$router.push('/gyms/' + this.$store.state.user.id + '/details');
           }
         }
