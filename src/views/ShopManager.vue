@@ -124,7 +124,7 @@ export default {
       {text: "ID", value: "id"},
       {text: "", value: "image_path", sortable: false},
       {text: "Product Code", value: "code"},
-      {text: "Category", value: "category.name"},
+      {text: "Category", value: "category_name"},
       {text: "Name", value: "name"},
       {text: "Price", value: "price"},
       {text: "Quantity", value: 'quantity'},
@@ -262,12 +262,20 @@ export default {
           })
     },
     getCategories(){
-      authClient.get('/ecom/categories/actions/get', {
+      authClient.get('/ecom/categories/actions/list', {
         'search_key': this.search,
       }).then(res => {
-        if(res.status === 200){
-          this.categories = res.data;
-        }
+        let data = res.data[0]
+          if(data.status){
+            this.categories = data.data.result;
+            this.loading = false;
+          }else{
+            this.loading = false;
+            this.$toast.error({
+              title: 'error',
+              message: data.message,
+          });
+          }
       }).catch(err => {
         console.log(err);
       })

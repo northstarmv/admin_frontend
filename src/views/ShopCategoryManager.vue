@@ -20,7 +20,7 @@
                 </template>-->
         <template v-slot:item.actions="{ item }">
           <v-icon @click="editCategory(item)" class="mr-2" color="primary">mdi-pencil</v-icon>
-          <v-icon @click="deleteCategory(item)" color="error">mdi-delete</v-icon>
+          <v-icon @click="showDeleteConfirmation(item, deleteCategory)" color="error">mdi-delete</v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -83,20 +83,30 @@ export default {
   }),
   methods: {
     deleteCategory(item) {
-      let result = window.prompt("Are you sure you want to delete this category? Type 'YES' to confirm.");
-      if (result === 'YES') {
-        authClient.post('/shop/categories/' + item.id)
-            .then(() => {
-              this.getCategories();
-            })
-            .catch(() => {
-              this.$store.dispatch('showSnackbar', {
-                color: 'error',
-                text: 'An error occurred while deleting the category.'
+          this.loading = true
+          authClient.post('/ecom/categories/actions/delete',{
+            id: item.id
+          }).then((response) => {
+            this.loading = false
+            let data = response.data[0]
+            if(data.status){
+              this.$toast.success({
+                title: 'Ok',
+                message: data.message,
               });
+              this.getCategories()
+            }else{
+              this.loading = false;
+              this.$toast.error({
+                title: 'error',
+                message: data.message,
             });
-      }
-    },
+          }
+            
+          }).catch((error) => {
+            console.log(error);
+          });
+      },
     editCategory(item) {
       this.data = item;
       this.isEdit = true;
@@ -107,22 +117,56 @@ export default {
       if (this.valid) {
         this.loading = true;
         authClient.post('/ecom/categories/actions/upsert', this.data).then(res => {
-          console.log(res);
-          if (res.status === 200) {
-            this.loading = false;
-            this.close();
-            this.data = {
-              id: null,
-              name: '',
-            };
-          }
+          let response_data = res.data[0]
+              if(response_data.status){
+                this.loading = false;
+                this.close();
+                this.data = {
+                  id: null,
+                  name: '',
+                };
+                this.$toast.success({
+                  title: 'Ok',
+                  message: response_data.message,
+              });
+              }else{
+                this.loading = false;
+                this.$toast.error({
+                  title: 'error',
+                  message: response_data.message[0],
+              });
+              }
         }).catch(err => {
           this.loading = false;
-          console.log(err);
-          window.alert('Something went wrong. Please try again later.');
+          this.$toast.error({
+                  title: 'error',
+                  message: 'error',
+              });
         });
       }
     },
+    showDeleteConfirmation(item, callback) {
+        this.$toast.question({
+          timeout: 10000, // The time in milliseconds the toast will be displayed
+          close: false, // Whether to show the close button
+          overlay: true, // Whether to display an overlay behind the toast
+          toastOnce: true, // Whether to show the toast only once
+          id: 'deleteToast',
+          zindex: 999,
+          title: 'Confirmation',
+          message: 'Are you sure you want to delete?',
+          position: 'center',
+          buttons: [
+            ['<button><b>YES</b></button>', function (instance, toast) {
+              callback(item)
+              instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+            }, true],
+            ['<button>NO</button>', function (instance, toast) {
+              instance.hide({ transitionOut: 'fadeOut' }, toast, 'button');
+            }],
+          ]
+        });
+      },
     close() {
       this.data = {
         id: null,
@@ -137,13 +181,20 @@ export default {
         id: null,
         name: '',
       };
-      authClient.get('/ecom/categories/actions/get', {
+      authClient.get('/ecom/categories/actions/list', {
         'search_key': this.search,
       }).then(res => {
-        if (res.status === 200) {
-          this.categories = res.data;
-          this.loading = false;
-        }
+        let data = res.data[0]
+          if(data.status){
+            this.categories = data.data.result;
+            this.loading = false;
+          }else{
+            this.loading = false;
+            this.$toast.error({
+              title: 'error',
+              message: data.message,
+          });
+          }
       }).catch(err => {
         console.log(err);
         this.loading = false;

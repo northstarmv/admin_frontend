@@ -8,6 +8,12 @@
 		},
 		{
 			"path": "../../../meeting_service"
+		},
+		{
+			"path": "../../../fitness_service"
+		},
+		{
+			"path": "../../../ecom_service"
 		}
 	],
 	"settings": {}
